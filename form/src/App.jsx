@@ -69,6 +69,7 @@ return (
                             <label htmlFor="Python" className='font-bold text-purple-500 px-1'>Python</label>
                             
                         </div>
+                        
 
                         <div className='flex items-center justify-center border border-1 border-purple-500 px-4 py-2 rounded-2xl'>
                             <input type="radio" name="JavaScript" id="JavaScript" className='text-purple-500 border' />
