@@ -1,9 +1,8 @@
-import { useState } from 'react'
-import QRCode from 'qrcode'
-import './App.css'
+import { useState } from 'react';
+import QRCode from 'qrcode';
+import './App.css';
 
 function App() {
-    const [count, setCount] = useState(0)
     const [formData, setFormData] = useState({
         username: '',
         email: '',
@@ -11,27 +10,48 @@ function App() {
         country: 'India',
         level: '',
         skill: ''
-    })
-    const [qrCodeUrl, setQrCodeUrl] = useState('')
+    });
+    const [qrCodeUrl, setQrCodeUrl] = useState('');
+    const [passwordStrength, setPasswordStrength] = useState('');
 
     const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value })
-    }
+        const { name, value } = e.target;
+        setFormData({ ...formData, [name]: value });
+
+        // Check password strength if the password field is being updated
+        if (name === 'password') {
+            checkPasswordStrength(value);
+        }
+    };
+
+    const checkPasswordStrength = (password) => {
+        const strongPasswordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+        if (strongPasswordPattern.test(password)) {
+            setPasswordStrength('Strong');
+        } else {
+            setPasswordStrength('Weak');
+        }
+    };
 
     const generateQrCode = async () => {
         try {
-            const qrCodeData = JSON.stringify(formData)
-            const url = await QRCode.toDataURL(qrCodeData)
-            setQrCodeUrl(url)
+            const qrCodeData = JSON.stringify(formData);
+            const url = await QRCode.toDataURL(qrCodeData);
+            setQrCodeUrl(url);
         } catch (error) {
-            console.error(error)
+            console.error(error);
         }
-    }
+    };
 
     const handleSubmit = (e) => {
-        e.preventDefault()
-        generateQrCode()
-    }
+        e.preventDefault();
+        const { username, email, password, level, skill } = formData;
+        if (!username || !email || !password || !level || !skill) {
+            alert("Please fill all the fields.");
+            return;
+        }
+        generateQrCode();
+    };
 
     return (
         <>
@@ -51,6 +71,11 @@ function App() {
                         <input type="password" name="password" placeholder='Password'
                             className='border border-purple-500 px-3 rounded-2xl h-11 text-purple-500'
                             value={formData.password} onChange={handleChange} />
+                        {passwordStrength && (
+                            <div className={`text-${passwordStrength === 'Strong' ? 'green' : 'red'}-500`}>
+                                {passwordStrength} Password
+                            </div>
+                        )}
 
                         <select name="country" className='text-purple-500 border border-purple-500 px-3 h-11 rounded-2xl'
                             value={formData.country} onChange={handleChange}>
@@ -61,7 +86,7 @@ function App() {
 
                         <h1 className='font-bold text-purple-500'>Level Of Development</h1>
                         <div className='flex flex-wrap gap-4'>
-                            {['Basic', 'Medium', 'Advanced'].map((level) => (
+                            {['Basic ', 'Medium', 'Advanced'].map((level) => (
                                 <div key={level} className='flex items-center border border-purple-500 px-4 py-2 rounded-2xl'>
                                     <input type="radio" name="level" value={level} 
                                         checked={formData.level === level} 
@@ -94,7 +119,7 @@ function App() {
                 </div>
             </div>
         </>
-    )
+    );
 }
 
-export default App
+export default App;
